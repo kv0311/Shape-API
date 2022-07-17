@@ -2,6 +2,7 @@ package server
 
 import (
 	"shape-api/controller"
+	"shape-api/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,20 +15,16 @@ func NewRouter() *gin.Engine {
 	health := new(controller.HealthController)
 
 	router.GET("/health", health.Status)
-	// router.Use(middleware.AuthMiddleware())
 
 	userGroup := router.Group("/user")
 	{
 		user := new(controller.UserController)
 		userGroup.POST("/register", user.Register)
 		userGroup.POST("/login", user.Login)
-
-		// router.Use(middleware.AuthMiddleware())
-
 	}
 
 	shapeGroup := router.Group("/shape")
-	// shapeGroup.Use(middleware.AuthMiddleware())
+	shapeGroup.Use(middleware.AuthMiddleware())
 	{
 		rectangleGroup := shapeGroup.Group("/rectangle")
 
@@ -51,7 +48,28 @@ func NewRouter() *gin.Engine {
 		squareGroup.POST("/delete", square.DeleteSquare)
 		squareGroup.POST("/getInfo/area", square.GetArea)
 		squareGroup.POST("/getInfo/perimeter", square.GetPerimeter)
+	}
 
+	{
+		diamondGroup := shapeGroup.Group("/diamond")
+		diamond := new(controller.DiamondController)
+		diamondGroup.POST("/create", diamond.CreateDiamond)
+		diamondGroup.POST("/getList", diamond.GetListDiamond)
+		diamondGroup.POST("/update", diamond.UpdateDiamond)
+		diamondGroup.POST("/delete", diamond.DeleteDiamond)
+		diamondGroup.POST("/getInfo/area", diamond.GetArea)
+		diamondGroup.POST("/getInfo/perimeter", diamond.GetPerimeter)
+	}
+
+	{
+		triangleGroup := shapeGroup.Group("/triangle")
+		triangle := new(controller.TriangleController)
+		triangleGroup.POST("/create", triangle.CreateTriangle)
+		triangleGroup.POST("/getList", triangle.GetListTriangle)
+		triangleGroup.POST("/update", triangle.UpdateTriangle)
+		triangleGroup.POST("/delete", triangle.DeleteTriangle)
+		triangleGroup.POST("/getInfo/area", triangle.GetArea)
+		triangleGroup.POST("/getInfo/perimeter", triangle.GetPerimeter)
 	}
 	return router
 }
